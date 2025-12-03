@@ -1,0 +1,12 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff 版本，建议保持较新
+    rev: v0.8.0
+    hooks:
+      # 1. 运行 Linter (检查代码质量)
+      - id: ruff
+        args: [--fix] # 如果有问题，尝试自动修复 (比如自动删掉没用的 import)
+
+      # 2. 运行 Formatter (格式化代码)
+      - id: ruff-format

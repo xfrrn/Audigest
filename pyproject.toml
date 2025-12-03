@@ -5,5 +5,37 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "bs4>=0.0.2",
+    "feedparser>=6.0.12",
+    "loguru>=0.7.3",
+    "requests>=2.32.5",
     "yt-dlp>=2025.11.12",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.0",
+]
+# pyproject.toml
+
+[tool.ruff]
+# 忽略一些文件夹
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+    "data",
+]
+# 单行最大长度 (虽然 Ruff 默认 88，但现代屏幕宽，通常设 120)
+line-length = 256
+
+[tool.ruff.lint]
+# 开启的规则集
+# E: pycodestyle errors
+# W: pycodestyle warnings
+# F: Pyflakes
+# I: isort (自动排序 import，非常有用！)
+select = ["E", "W", "F", "I"]
+
+# 忽略的规则 (根据需要添加)
+ignore = []

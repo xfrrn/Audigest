@@ -45,12 +45,11 @@ class MediaDownloader:
         self.foreign_domains = foreign_domains or settings.FOREIGN_DOMAINS
         logger.info(f"[Downloader] 初始化完成 | 目录: {self.output_dir} | 代理: {self.proxy_url or '无'}")
 
-    def download(self, url: str) -> Dict[str, Any]:
-        clean_url = self._clean_url(url)
-        real_url = self._resolve_real_url(clean_url)
+    def download(self, url: str, platform: str) -> Dict[str, Any]:
+        real_url = self._resolve_real_url(url)
         file_uuid = str(uuid.uuid4())
 
-        ydl_opts = self._build_ydl_opts(file_uuid, real_url)
+        ydl_opts = self._build_ydl_opts(file_uuid, platform)
 
         logger.info(f"[Downloader] 开始处理任务: {real_url}")
 
@@ -76,16 +75,16 @@ class MediaDownloader:
                     "title": info.get("title", "Unknown Title"),
                     "author": info.get("uploader", info.get("artist", "Unknown Author")),
                     "duration": info.get("duration", 0),
-                    "platform": info.get("extractor_key", "Custom"),
-                    "original_url": clean_url,
+                    "platform": platform,
+                    "original_url": real_url,
                     "local_path": str(rel_path),
                 }
 
         except Exception as e:
-            logger.exception(f"[Downloader] 任务失败: {clean_url}")
+            logger.exception(f"[Downloader] 任务失败: {real_url}")
             raise DownloadError(f"底层下载失败: {str(e)}") from e
 
-    def _build_ydl_opts(self, file_uuid: str, url: str) -> Dict:
+    def _build_ydl_opts(self, file_uuid: str, platform: str) -> Dict:
         """
         构建 yt-dlp 的配置字典
         """
@@ -110,32 +109,11 @@ class MediaDownloader:
                 "Referer": "https://www.bilibili.com/",
             },
         }
-        if self.proxy_url and any(domain in url for domain in self.foreign_domains):
+        if self.proxy_url and platform in self.foreign_domains:
             logger.info(f"[网络] 检测到外网域名，启用代理: {self.proxy_url}")
             opts["proxy"] = self.proxy_url
 
         return opts
-
-    def _clean_url(self, url: str) -> str:
-        """清洗 URL 参数"""
-        url = url.strip()
-
-        if "bilibili.com" in url:
-            return url.split("?")[0]
-
-        if ("youtube.com" in url or "youtu.be" in url) and "&" in url:
-            if "watch?v=" in url:
-                try:
-                    base = url.split("watch?v=")[1]
-                    video_id = base.split("&")[0]
-                    return f"https://www.youtube.com/watch?v={video_id}"
-                except Exception:
-                    pass
-
-        if ("x.com" in url or "twitter.com" in url) and "?" in url:
-            return url.split("?")[0]
-
-        return url
 
     def _resolve_real_url(self, url: str) -> str:
         if url.endswith(".xml") or "rss" in url or "feed" in url:

@@ -16,6 +16,7 @@ dependencies = [
     "torchaudio",
     "dotenv>=0.9.9",
     "sqlmodel>=0.0.27",
+    "pydantic-settings>=2.12.0",
 ]
 
 [dependency-groups]

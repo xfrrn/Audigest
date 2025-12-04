@@ -1,13 +1,15 @@
 import os
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import feedparser
 import requests
 import yt_dlp
 from bs4 import BeautifulSoup
 from loguru import logger
+
+from backend.core.config import settings
 
 
 class DownloadError(Exception):
@@ -31,27 +33,16 @@ class YtDlpLogger:
 
 
 class MediaDownloader:
-    def __init__(self, output_dir: str = "data/audio", proxy_url: Optional[str] = None):
+    def __init__(self, output_dir: str = "data/audio", proxy_url: Optional[str] = None, foreign_domains: Optional[List[str]] = None):
         """
         初始化下载器
         :param output_dir: 音频保存目录
         :param proxy_url: 代理地址 (如 http://127.0.0.1:7890)
         """
         self.output_dir = Path(output_dir)
-        self.proxy_url = proxy_url
-
         self.output_dir.mkdir(parents=True, exist_ok=True)
-
-        self.foreign_domains = [
-            "youtube",
-            "youtu.be",
-            "google",
-            "twitter",
-            "x.com",
-            "tiktok",
-            "instagram",
-        ]
-
+        self.proxy_url = proxy_url or settings.PROXY_URL
+        self.foreign_domains = foreign_domains or settings.FOREIGN_DOMAINS
         logger.info(f"[Downloader] 初始化完成 | 目录: {self.output_dir} | 代理: {self.proxy_url or '无'}")
 
     def download(self, url: str) -> Dict[str, Any]:

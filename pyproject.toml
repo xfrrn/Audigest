@@ -5,11 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "bs4>=0.0.2",
+    "beautifulsoup4>=4.14.3",
     "feedparser>=6.0.12",
     "loguru>=0.7.3",
     "requests>=2.32.5",
+    "whisperx>=3.7.4",
     "yt-dlp>=2025.11.12",
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "dotenv>=0.9.9",
 ]
 
 [dependency-groups]
@@ -26,7 +31,7 @@ exclude = [
     "__pycache__",
     "data",
 ]
-# 单行最大长度 (虽然 Ruff 默认 88，但现代屏幕宽，通常设 120)
+# 单行最大长度
 line-length = 256
 
 [tool.ruff.lint]
@@ -34,7 +39,7 @@ line-length = 256
 # E: pycodestyle errors
 # W: pycodestyle warnings
 # F: Pyflakes
-# I: isort (自动排序 import，非常有用！)
+# I: isort
 select = ["E", "W", "F", "I"]
 
 # 忽略的规则 (根据需要添加)

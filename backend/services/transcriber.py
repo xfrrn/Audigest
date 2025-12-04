@@ -1,6 +1,5 @@
 import importlib.util
 import os
-from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
 import requests
@@ -37,7 +36,6 @@ class AudioTranscriber:
         api_key: Optional[str] = None,
         hf_token: Optional[str] = None,
         device: str = "cuda",
-        output_dir: str = "data/processing",
     ):
         """
         初始化转录器
@@ -49,9 +47,6 @@ class AudioTranscriber:
         self.api_key = api_key
         self.hf_token = hf_token
         self.device = device
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-
         logger.info(f"[Transcriber] 初始化完成 | 模式: {self.mode} | 设备: {self.device}")
 
     def transcribe(self, audio_path: str, language: str = "auto") -> List[Dict]:

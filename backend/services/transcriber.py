@@ -1,28 +1,29 @@
+import importlib.util
 import os
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
 import requests
-import torch
 from loguru import logger
 
-_original_torch_load = torch.load
+HAS_LOCAL_DEPS = importlib.util.find_spec("whisperx") is not None
 
 
-def _safe_torch_load(*args, **kwargs):
-    kwargs["weights_only"] = False
-    return _original_torch_load(*args, **kwargs)
+# 补丁函数
+def _apply_torch_monkey_patch():
+    import torch
 
+    if getattr(torch, "_audigest_patched", False):
+        return
+    logger.debug("🔧 [Local] 应用 PyTorch 兼容性补丁...")
+    _original_torch_load = torch.load
 
-torch.load = _safe_torch_load
+    def _safe_torch_load(*args, **kwargs):
+        kwargs["weights_only"] = False
+        return _original_torch_load(*args, **kwargs)
 
-try:
-    import whisperx
-    from whisperx.diarize import DiarizationPipeline
-
-    HAS_LOCAL_DEPS = True
-except ImportError:
-    HAS_LOCAL_DEPS = False
+    torch.load = _safe_torch_load
+    setattr(torch, "_audigest_patched", True)
 
 
 class TranscriptionError(Exception):
@@ -79,9 +80,11 @@ class AudioTranscriber:
     def _transcribe_local_whisperx(self, audio_path: str) -> List[Dict]:
         if not HAS_LOCAL_DEPS:
             raise ImportError("未安装 whisperx 或 torch，无法使用本地模式。请运行 uv add git+https://github.com/m-bain/whisperX.git")
-
         if not self.hf_token:
             logger.warning("⚠️ 未提供 HuggingFace Token，无法进行说话人分离 (Diarization)，仅能转录文字。")
+        _apply_torch_monkey_patch()
+        import whisperx
+        from whisperx.diarize import DiarizationPipeline
 
         # 1. 加载模型
         model_name = "medium"

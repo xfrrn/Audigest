@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     FOREIGN_DOMAINS: List[str] = ["youtube", "twitter", "x", "tiktok", "RSS"]
     HF_TOKEN: Optional[str] = None
     DEEPGRAM_API_KEY: Optional[str] = None
+    DATABASE_URL: Optional[str] = None
 
     # LLM 相关配置
     DEFAULT_LLM_PROVIDER: str = "deepseek"

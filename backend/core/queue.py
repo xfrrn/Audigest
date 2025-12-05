@@ -1,9 +1,7 @@
-# src/core/queue.py
 from arq.connections import ArqRedis, RedisSettings, create_pool
 
 from backend.core.config import settings
 
-# 1. 定义配置
 REDIS_SETTINGS = RedisSettings.from_dsn(settings.REDIS_URL)
 
 

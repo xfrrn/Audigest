@@ -6,6 +6,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PROXY_URL: Optional[str] = "http://127.0.0.1:7890"
     FOREIGN_DOMAINS: List[str] = ["youtube", "twitter", "x", "tiktok", "RSS"]
+    HF_TOKEN: Optional[str] = None
+    DEEPGRAM_API_KEY: Optional[str] = None
 
     # LLM 相关配置
     DEFAULT_LLM_PROVIDER: str = "deepseek"

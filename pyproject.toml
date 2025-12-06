@@ -20,6 +20,7 @@ dependencies = [
     "openai>=2.9.0",
     "psycopg2-binary>=2.9.11",
     "arq>=0.26.3",
+    "fastapi>=0.123.10",
 ]
 
 [dependency-groups]

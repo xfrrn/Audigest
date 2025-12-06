@@ -12,6 +12,8 @@ def get_session():
 
 
 def init_db():
+    import backend.models  # noqa: F401
+
     logger.info("🔄 正在初始化数据库表结构...")
     SQLModel.metadata.create_all(engine)
     logger.info("✅ 数据库表结构创建完成！")

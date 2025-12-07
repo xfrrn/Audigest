@@ -7,6 +7,7 @@ from sqlmodel import Session
 
 from backend.core.config import settings
 from backend.core.database import engine
+from backend.core.utils import detect_language_from_title
 from backend.models import SourceMedia
 from backend.services.downloader import MediaDownloader
 from backend.services.storage import StorageManager
@@ -56,7 +57,8 @@ async def process_media_task(ctx: Any, media_id: int):
 
             # 第二步：转录
             _update_status(session, media, "transcribing")
-            segments = await asyncio.to_thread(transcriber.transcribe, media.local_audio_path)
+            target_lang = detect_language_from_title(media.title)
+            segments = await asyncio.to_thread(transcriber.transcribe, media.local_audio_path, language=target_lang)
 
             # 第三步：存储
             txt_path = storage.save_transcript(session, media.id, segments)

@@ -5,6 +5,7 @@ from typing import Dict, List
 from loguru import logger
 from sqlmodel import Session, col, delete
 
+from backend.core.utils import format_seconds, seconds_to_srt
 from backend.models import SourceMedia, TranscriptSegment
 
 
@@ -50,30 +51,15 @@ class StorageManager:
         txt_path = base_path.with_suffix(".txt")
         with open(txt_path, "w", encoding="utf-8") as f:
             for seg in segments:
-                time_str = self._format_seconds(seg["start"])
+                time_str = format_seconds(seg["start"])
                 line = f"[{time_str}] {seg['speaker']}: {seg['text']}\n"
                 f.write(line)
         srt_path = base_path.with_suffix(".srt")
         with open(srt_path, "w", encoding="utf-8") as f:
             for i, seg in enumerate(segments):
-                start = self._seconds_to_srt(seg["start"])
-                end = self._seconds_to_srt(seg["end"])
+                start = seconds_to_srt(seg["start"])
+                end = seconds_to_srt(seg["end"])
                 f.write(f"{i + 1}\n{start} --> {end}\n{seg['text']}\n\n")
 
         logger.success(f"✅ [Storage] 文件生成完毕: {txt_path}")
         return str(txt_path)
-
-    @staticmethod
-    def _format_seconds(seconds: float) -> str:
-        """辅助：将秒转为 MM:SS 格式"""
-        m, s = divmod(int(seconds), 60)
-        return f"{m:02d}:{s:02d}"
-
-    @staticmethod
-    def _seconds_to_srt(seconds: float) -> str:
-        """辅助：将秒转为 SRT 时间戳格式 (00:00:00,000)"""
-        millis = int((seconds % 1) * 1000)
-        seconds = int(seconds)
-        m, s = divmod(seconds, 60)
-        h, m = divmod(m, 60)
-        return f"{h:02d}:{m:02d}:{s:02d},{millis:03d}"

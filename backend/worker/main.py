@@ -1,3 +1,5 @@
+from loguru import logger
+
 from backend.core.config import settings
 from backend.core.database import init_db
 from backend.core.queue import REDIS_SETTINGS
@@ -5,7 +7,7 @@ from backend.worker.tasks import process_media_task
 
 
 async def startup(ctx):
-    print("👷 Worker 正在启动，检查数据库连接...")
+    logger.info("👷 Worker 正在启动，检查数据库连接...")
     init_db()
 
 

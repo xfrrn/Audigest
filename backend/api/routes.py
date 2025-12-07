@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 from sqlmodel import Session, select
 
 from backend.api.schemas import (
@@ -52,7 +53,7 @@ async def create_media_task(request: MediaCreateRequest, session: Session = Depe
         redis = await get_redis_pool()
         await redis.enqueue_job("process_media_task", existing_media.id)
     except Exception as e:
-        print(f"⚠️ Redis 连接失败: {e}")
+        logger.warning(f"⚠️ Redis 连接失败: {e}")
 
     return existing_media
 

@@ -1,34 +1,39 @@
 [project]
 name = "audigest"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI Video Summarizer"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10, <3.12"
+
 dependencies = [
     "beautifulsoup4>=4.14.3",
     "feedparser>=6.0.12",
     "loguru>=0.7.3",
     "requests>=2.32.5",
-    "whisperx>=3.7.4",
     "yt-dlp>=2025.11.12",
-    "torch",
-    "torchvision",
-    "torchaudio",
-    "dotenv>=0.9.9",
+    "torch==2.6.0",
+    "torchvision==0.21.0",
+    "torchaudio==2.6.0",
+    "python-dotenv>=1.0.0",
     "sqlmodel>=0.0.27",
     "pydantic-settings>=2.12.0",
     "openai>=2.9.0",
     "psycopg2-binary>=2.9.11",
-    "arq>=0.26.3",
+    "arq>=0.26.0,<0.32.0",
     "fastapi>=0.123.10",
-    "uvicorn>=0.38.0",
+    "uvicorn[standard]>=0.24.0",
+    "funasr>=0.9.0",
+    "modelscope>=1.11.0",
+    "pandas>=2.3.3",
+    "pyannote-audio>=3.4.0",
+    "ctranslate2>=4.6.2",
+    "faster-whisper>=1.2.1",
+    "transformers>=4.57.3",
+    "nltk>=3.9.2",
 ]
 
 [dependency-groups]
-dev = [
-    "pre-commit>=4.5.0",
-]
-# pyproject.toml
+dev = ["pre-commit>=4.5.0"]
 
 [tool.ruff]
 # 忽略一些文件夹
@@ -51,3 +56,13 @@ select = ["E", "W", "F", "I"]
 
 # 忽略的规则 (根据需要添加)
 ignore = []
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu118" }]
+torchvision = [{ index = "pytorch-cu118" }]
+torchaudio = [{ index = "pytorch-cu118" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true

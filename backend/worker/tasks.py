@@ -21,7 +21,7 @@ transcriber = AudioTranscriber(
     mode=transcriber_mode,
     api_key=settings.DEEPGRAM_API_KEY,
     hf_token=settings.HF_TOKEN,
-    device="cuda",
+    device=None,
 )
 storage = StorageManager()
 summarizer = Summarizer()

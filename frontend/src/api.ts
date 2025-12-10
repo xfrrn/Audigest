@@ -73,8 +73,11 @@ export default {
     const response = await apiClient.get<TranscriptResponse>(`/media/${id}/transcript`);
     return response.data;
   },
-  
-  // Placeholder for summary endpoint if it exists later
-  // async getMediaSummary(id: number): Promise<SummaryResponse> { ... }
+
+  async getMediaSummary(id: number): Promise<SummaryResponse> {
+    const response = await apiClient.get<SummaryResponse>(`/media/${id}/summary`);
+    return response.data;
+  },
 };
+
 

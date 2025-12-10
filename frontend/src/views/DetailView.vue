@@ -32,7 +32,6 @@ const { data: summary, isLoading: isSummaryLoading } = useQuery({
   queryKey: ['summary', mediaId],
   queryFn: async () => {
     try {
-      // @ts-ignore
       const res = await api.getMediaSummary(mediaId)
       return res
     } catch (e) {
@@ -46,36 +45,28 @@ const embedUrl = computed(() => {
   if (!media.value) return ''
   const url = media.value.original_url
   
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    let videoId = ''
-    if (url.includes('v=')) {
-      const parts = url.split('v=')
-      if (parts.length > 1 && parts[1]) {
-        const subParts = parts[1].split('&')
-        if (subParts.length > 0 && subParts[0]) {
-          videoId = subParts[0]
-        }
+  try {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = ''
+      if (url.includes('v=')) {
+        videoId = url.split('v=')[1]?.split('&')[0] || ''
+      } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1]?.split('?')[0] || ''
       }
-    } else if (url.includes('youtu.be/')) {
-      const parts = url.split('youtu.be/')
-      if (parts.length > 1 && parts[1]) {
-        const subParts = parts[1].split('?')
-        if (subParts.length > 0 && subParts[0]) {
-          videoId = subParts[0]
-        }
+      
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${Math.floor(currentSeekTime.value)}`
       }
     }
-    if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${Math.floor(currentSeekTime.value)}`
+    
+    if (url.includes('bilibili.com')) {
+      const match = url.match(/video\/(BV\w+)/)
+      if (match && match[1]) {
+        return `https://player.bilibili.com/player.html?bvid=${match[1]}&t=${Math.floor(currentSeekTime.value)}&high_quality=1`
+      }
     }
-  }
-  
-  if (url.includes('bilibili.com')) {
-    // Extract BVID
-    const match = url.match(/video\/(BV\w+)/)
-    if (match) {
-      return `https://player.bilibili.com/player.html?bvid=${match[1]}&t=${Math.floor(currentSeekTime.value)}&high_quality=1`
-    }
+  } catch (e) {
+    console.error('Error parsing video URL:', e)
   }
   
   return ''

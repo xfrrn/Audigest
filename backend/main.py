@@ -1,4 +1,6 @@
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +8,9 @@ from loguru import logger
 
 from backend.api.routes import router as api_router
 from backend.core.database import init_db
+
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 
 @asynccontextmanager
@@ -48,3 +53,9 @@ app.include_router(api_router, prefix="/api/v1")
 def root():
     """健康检查接口"""
     return {"message": "Welcome to Audigest API", "docs_url": "/docs", "redoc_url": "/redoc"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
